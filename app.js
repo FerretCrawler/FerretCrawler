@@ -4,15 +4,21 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var mongo = require('mongodb');
-var monk = require('monk');
+var MongoClient = require('mongodb').MongoClient;
+var assert = require('assert');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var crawlers = require('./routes/crawlers');
 
 var app = express();
-var db = monk('localhost:27017/crawler_db');
+var db;
+MongoClient.connect('mongodb://localhost:27017/crawler_db', function(err, database) {
+  assert.equal(null, err);
+  console.log("Connected correctly to server");
+  db = database;
+});
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
