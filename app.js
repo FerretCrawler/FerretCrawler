@@ -12,7 +12,7 @@ var users = require('./routes/users');
 var crawlers = require('./routes/crawlers');
 
 var app = express();
-var db = monk('localhost:27017/foody_hcm');
+var db = monk('localhost:27017/crawler_db');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
