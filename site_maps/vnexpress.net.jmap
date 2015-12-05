@@ -1,0 +1,19 @@
+{
+  "name": "article",
+  "html": "div .block_col_480",
+  "props":
+  [
+    {
+      "name": "title",
+      "html": ".title_news h1"
+    },
+    {
+      "name": "description",
+      "html": ".short_intro"
+    },
+    {
+      "name": "detail",
+      "html": ".fck_detail p.Normal"
+    }
+  ]
+}
