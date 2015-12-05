@@ -11,7 +11,7 @@ router.get('/', function(req, res, next) {
 
 /* POST */
 router.post('/', function(req, res) {
-	res.send('Got a POST request');
+	res.send('Got a POST request: ');
 });
 
 module.exports = router;

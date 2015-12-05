@@ -7,11 +7,12 @@ var Content = require('.././models/content');
 var router = express.Router();
 var resp, content;
 
-/* GET home page. */
+/* GET */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Crawler main page' });
+  res.send('Try to crawl something huh. \nPlease use /crawl/[YOUR_URL]');
 });
 
+/* GET Crawler */
 router.get('/crawl/:url', function(req, res, next) {
   // Crawl html content from url
   crawler.crawl(req.params.url, res, next);
@@ -19,13 +20,13 @@ router.get('/crawl/:url', function(req, res, next) {
   // Scrap the content based on .jmap file structure
   scraper.scrapContents(res.locals.html, res, next);
 }, function(req, res, next) {
+  // Scrape information from content and store into database
+  scraper.scrapLinksFromURL(res.locals.html, res, next);
+  next();
+}, function(req, res, next) {
   // Save extracted data into database
   Content.insert(req, res, next, res.locals.objToSave);
   // res.send(res.locals.html);
-  next();
-}, function(req, res, next) {
-  // Scrape information from content and store into database
-  scraper.scrapLinksFromURL(res.locals.html, res, next);
   next();
 });
 
