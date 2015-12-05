@@ -1,6 +1,6 @@
 var events = require('events')
 var eventEmitter = new events.EventEmitter();
-var linkEventHandler = require('.././models/linkEventHandler')
+var LinkEventHandler = require('.././models/linkEventHandler');
 
 // create a schema
 var Link = {

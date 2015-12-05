@@ -7,6 +7,7 @@ var scrapLinksFromURL = function(html, res, next) {
 };
 
 var scrapContents = function(html, res, next) {
+  console.log("Scrapping content ...");
   var $ = cheerio.load(html);
 
   fs.readFile('./site_maps/vnexpress.net.jmap', 'utf8', function (err, data) {
@@ -16,8 +17,9 @@ var scrapContents = function(html, res, next) {
     var base_html = obj.html;
     for(i in obj.props) {
       obj.props[i].content = $(base_html + " " + obj.props[i].html).text();
-      console.log(obj.props[i]);
     }
+    res.locals.objToSave = obj;
+    next();
   });
 }
 
