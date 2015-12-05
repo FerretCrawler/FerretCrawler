@@ -57,6 +57,8 @@ var Content = {
     COLLECTION_NAME = objToSave.name;
     eventEmitter.emit("safeInsert");
   }
+
+  
 }
 
 // make this available to our users in our Node applications
