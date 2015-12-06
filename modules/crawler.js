@@ -41,7 +41,7 @@ function visitPage (url, callback) {
       // Parse the document body
       var $ = cheerio.load(body);
       // console.log("Page title: " + $('title').text());
-      // Scrapping content
+      // TODO: Scrapping content
 
       // Get hyperlinks - scrapping links
       collectAbsoluteLinks($);
