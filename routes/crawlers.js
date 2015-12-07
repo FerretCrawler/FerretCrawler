@@ -17,7 +17,7 @@ router.get('/crawl/:url', function(req, res, next) {
   crawler.crawl(req.params.url, res, next);
 }, function(req, res, next) {
   // Scrap the content based on .jmap file structure
-  scraper.scrapContents(res.locals.html, res, next);
+  scraper.scrapContents(req, res, next);
 }, function(req, res, next) {
   // Save extracted data into database
   Content.insert(req, res, next, res.locals.objToSave);

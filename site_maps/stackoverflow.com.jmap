@@ -1,0 +1,19 @@
+{
+  "name": "question",
+  "html": "div #content",
+  "props":
+  [
+    {
+      "name": "title",
+      "html": "div #question-header a"
+    },
+    {
+      "name": "description",
+      "html": "div.post-text"
+    },
+    {
+      "name": "author",
+      "html": "td.owner div.user-details a"
+    }
+  ]
+}

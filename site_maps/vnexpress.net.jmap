@@ -13,7 +13,8 @@
     },
     {
       "name": "detail",
-      "html": ".fck_detail p.Normal"
+      "html": ".fck_detail p.Normal",
+      "type": "all"
     }
   ]
 }

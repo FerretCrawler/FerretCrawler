@@ -54,7 +54,7 @@ var Content = {
   insert: function(req, res, next, obj) {
     db = req.db;
     objToSave = obj;
-    COLLECTION_NAME = objToSave.name;
+    COLLECTION_NAME = objToSave.table;
     eventEmitter.emit("safeInsert");
   }
 }
