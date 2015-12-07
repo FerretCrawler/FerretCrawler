@@ -3,3 +3,6 @@ extends layout
 block content
   h1= title
   p Welcome to #{title}
+  form(name="Input Site", action="/", method="post")
+   input(type="text", placeholder="Put your seed site", value="http://vnexpress.net")
+   button(type="submit") Submit
