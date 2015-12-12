@@ -14,7 +14,8 @@ router.get('/', function(req, res, next) {
 router.get('/crawl/:url', function(req, res, next) {
   // Crawl html content from url
   // crawler.crawl(req.params.url, res, next);
-  crawler.crawl_html(req.params.url, next);
+  crawler.crawl_html(req.params.url);
+  next();
 }, function(req, res, next) {
   next();
 }, function(req, res, next) {

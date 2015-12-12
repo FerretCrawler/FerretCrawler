@@ -1,6 +1,7 @@
 var URL = require('url');
 var cheerio = require('cheerio');
 var fs = require('fs');
+var Args = require("vargs").Constructor;
 
 var SEARCH_WORD = "vnexpress";
 
@@ -38,7 +39,7 @@ var scrapLinksFromURL = function(res, next) {
   //  next();
 }
 
-var buildObject = function(url, $, obj, next){
+var buildObject = function(url, $, obj){
   var target_obj = {};
   console.log("Building object ...")
   target_obj.table = obj.name;
@@ -51,11 +52,11 @@ var buildObject = function(url, $, obj, next){
     else
       target_obj[obj.props[i].name] = $(obj.props[i].html).first().text();
   }
-  console.log(target_obj);
   return target_obj;
 }
 
-var scrapContents = function(url, html, next, callback, map) {
+var scrapContents = function(url, html, map) {
+  var args = new Args(arguments);
   if(html != null){
     console.log("Scrapping content ...");
     var $ = cheerio.load(html);
@@ -63,17 +64,17 @@ var scrapContents = function(url, html, next, callback, map) {
       map = URL.parse(url).host;
 
     fs.readFile('./site_maps/' + map + '.jmap', 'utf8', function (err, data) {
-      console.log("Reading map file ...")
+      console.log("Reading map file " + map + ".jmap ...")
       if (err)
-        next(err);
+        console.log(err);
       obj = JSON.parse(data);
-      var target_obj = buildObject(url, $, obj, next);
-      if(typeof callback == "function")
-        callback(next, target_obj);
+      var target_obj = buildObject(url, $, obj);
+      var listArgs = args.all;
+      listArgs.unshift(target_obj);
+      args.callback.apply({}, listArgs);
     });
   } else {
     console.log("Nothing to scrap ...");
-    next();
   }
 }
 

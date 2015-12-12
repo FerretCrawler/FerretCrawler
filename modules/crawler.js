@@ -107,7 +107,7 @@ var crawl = function(url, res, next) {
   next();
 };
 
-var crawl_html = function(url, next) {
+var crawl_html = function(url) {
   console.log("Crawling " + url);
   if(url.match(/^http:\/\/(?!www.)([a-z.])*(:[0-9]*)?\//i)) {
     request(url,
@@ -125,15 +125,13 @@ var crawl_html = function(url, next) {
       } , function(error, response, html) {
         if(!error) {
           // Scrap the content based on .jmap file structure
-          scraper.scrapContents(url, html, next, Content.insert);
+          scraper.scrapContents(url, html, null, Content.insert);
         } else {
           console.log(error);
-          next();
         }
     });
   } else {
     console.log("URL should follow this template : http://hostname.ext/...");
-    next();
   }
 }
 
