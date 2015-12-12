@@ -14,7 +14,13 @@
     {
       "name": "detail",
       "html": ".fck_detail p.Normal",
-      "type": "all"
+      "type": "raw"
+    },
+    {
+      "name": "temporary",
+      "html": "a",
+      "type": "raw",
+      "attr": "href"
     }
   ]
 }

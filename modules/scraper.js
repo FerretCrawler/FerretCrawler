@@ -1,12 +1,14 @@
+var URL = require('url');
 var cheerio = require('cheerio');
 var fs = require('fs');
 
 var SEARCH_WORD = "vnexpress";
 
-var scrapLinksFromURL = function(html, res, next) {
-  var $ = cheerio.load(html);
+var scrapLinksFromURL = function(res, next) {
+  if(res.locals.html != null)
+    var $ = cheerio.load(res.locals.html);
   // res.locals.links = $('a').get();
-  // var pagesToVisit = 
+  // var pagesToVisit =
   // var allAbsoluteLinks = [];
 
   // var absotuleLinks = $("a[href^='http']");
@@ -36,31 +38,43 @@ var scrapLinksFromURL = function(html, res, next) {
   //  next();
 }
 
-var scrapContents = function(req, res, next) {
-  console.log("Scrapping content ...");
-  var html = res.locals.html;
-  var $ = cheerio.load(html);
+var buildObject = function(url, $, obj, next){
+  var target_obj = {};
+  console.log("Building object ...")
+  target_obj.table = obj.name;
+  target_obj.url = url;
+  for(i in obj.props) {
+    if(obj.props[i].type == "all")
+      target_obj[obj.props[i].name] = $(obj.props[i].html).text();
+    else if(obj.props[i].type == "raw")
+      target_obj[obj.props[i].name] = $(obj.props[i].html);
+    else
+      target_obj[obj.props[i].name] = $(obj.props[i].html).first().text();
+  }
+  console.log(target_obj);
+  return target_obj;
+}
 
-  fs.readFile('./site_maps/stackoverflow.com.jmap', 'utf8', function (err, data) {
-    console.log("Reading map file ...")
-    if (err)
-      next(err);
-    obj = JSON.parse(data);
-    var target_obj = {};
-    console.log("Building object ...")
-    target_obj.table = obj.name;
-    target_obj.url = req.params.url;
-    var base_html = obj.html;
-    for(i in obj.props) {
-      if(obj.props[i].type == "all")
-        target_obj[obj.props[i].name] = $(obj.props[i].html).text();
-      else
-        target_obj[obj.props[i].name] = $(obj.props[i].html).first().text();
-    }
-    console.log(target_obj);
-    res.locals.objToSave = target_obj;
+var scrapContents = function(url, html, next, callback, map) {
+  if(html != null){
+    console.log("Scrapping content ...");
+    var $ = cheerio.load(html);
+    if(map == null)
+      map = URL.parse(url).host;
+
+    fs.readFile('./site_maps/' + map + '.jmap', 'utf8', function (err, data) {
+      console.log("Reading map file ...")
+      if (err)
+        next(err);
+      obj = JSON.parse(data);
+      var target_obj = buildObject(url, $, obj, next);
+      if(typeof callback == "function")
+        callback(next, target_obj);
+    });
+  } else {
+    console.log("Nothing to scrap ...");
     next();
-  });
+  }
 }
 
 module.exports.scrapLinksFromURL = scrapLinksFromURL;

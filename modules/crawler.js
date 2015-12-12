@@ -1,6 +1,8 @@
 var request = require('request');
 var cheerio = require('cheerio');   // parse and select HTML elements on the page
 var sleep = require('sleep');       // Sleep thread
+var scraper = require('.././modules/scraper');
+var Content = require('.././models/content');
 
 var START_URL =  "http://vnexpress.net";
 var SEARCH_WORD = "vnexpress";
@@ -45,7 +47,7 @@ function visitPage (url, callback) {
 
       // Get hyperlinks - scrapping links
       collectAbsoluteLinks($);
-      
+
       callback();
     }
   });
@@ -76,7 +78,7 @@ function collectAbsoluteLinks($) {
 
   absotuleLinks.each(function() {
     var link = $(this).attr('href');
-    
+
     if (validateURL(link)) {
       if (link in pagesVisited || pagesToVisit.indexOf(link) !== -1 || allAbsoluteLinks.indexOf(link) !== -1) {
         // console.log("X> Link existed");
@@ -96,21 +98,45 @@ function collectAbsoluteLinks($) {
 }
 
 // --------------------------
-var crawl = function(domainName, res, next) {
-  var url = "http://" + domainName;
+var crawl = function(url, res, next) {
   console.log("Crawling " + url);
-  // request(url, function(error, response, html) {
-  //   if(!error) {
-  //     res.locals.html = html;
-  //   } else {
-  //     res.locals.html = null;
-  //   }
 
   pagesToVisit.push(url);
   crawling();
-  
+
   next();
 };
 
+var crawl_html = function(url, next) {
+  console.log("Crawling " + url);
+  if(url.match(/^http:\/\/(?!www.)([a-z.])*(:[0-9]*)?\//i)) {
+    request(url,
+      {
+        // Pretend to be a normal request
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:42.0) Gecko/20100101 Firefox/42.0',
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+          'Accept-Language': 'en-US,en;q=0.5',
+          'Accept-Encoding': 'gzip, deflate',
+          'Connection': 'keep-alive',
+          'Cache-Control': 'max-age=0'
+        },
+        gzip: true
+      } , function(error, response, html) {
+        if(!error) {
+          // Scrap the content based on .jmap file structure
+          scraper.scrapContents(url, html, next, Content.insert);
+        } else {
+          console.log(error);
+          next();
+        }
+    });
+  } else {
+    console.log("URL should follow this template : http://hostname.ext/...");
+    next();
+  }
+}
+
 
 module.exports.crawl = crawl;
+module.exports.crawl_html = crawl_html;

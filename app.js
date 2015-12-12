@@ -9,14 +9,13 @@ var assert = require('assert');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
-var crawlers = require('./routes/crawlers');
+var ferrets = require('./routes/ferrets');
 
 var app = express();
-var db;
 MongoClient.connect('mongodb://localhost:27017/crawler_db', function(err, database) {
   assert.equal(null, err);
   console.log("Connected correctly to server");
-  db = database;
+  GLOBAL.db = database;
 });
 
 
@@ -40,7 +39,7 @@ app.use(function(req, res, next){
 
 app.use('/', routes);
 // app.use('/users', users);
-app.use('/crawlers', crawlers);
+app.use('/ferrets', ferrets);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

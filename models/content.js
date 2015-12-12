@@ -44,21 +44,27 @@ eventEmitter.on('createCollection', createCollectionHandler);
 
 var insertHandler = function(){
   console.log("Insert ...");
-  collection.updateOne({}, objToSave, {upsert : true});
+  // collection.updateOne({url: objToSave.url}, objToSave, {upsert : true});
 }
 // Bind the connection event with the handler
 eventEmitter.on('insert', insertHandler);
 
 // create a schema
 var Content = {
-  insert: function(req, res, next, obj) {
-    db = req.db;
-    objToSave = obj;
-    COLLECTION_NAME = objToSave.table;
-    eventEmitter.emit("safeInsert");
+  insert: function(next, obj) {
+    if(obj != null) {
+      db = GLOBAL.db;
+      objToSave = obj;
+      objToSave.lastChangedDate = Date.now();
+      COLLECTION_NAME = objToSave.table;
+      eventEmitter.emit("safeInsert");
+      next();
+    } else {
+      next();
+    }
   }
 
-  
+
 }
 
 // make this available to our users in our Node applications
