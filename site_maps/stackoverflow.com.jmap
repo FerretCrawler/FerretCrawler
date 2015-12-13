@@ -5,15 +5,18 @@
   [
     {
       "name": "title",
-      "html": "div #question-header a"
+      "html": "div #question-header a",
+      "attr": "text"
     },
     {
       "name": "description",
-      "html": "div.post-text"
+      "html": "div.post-text",
+      "attr": "text"
     },
     {
       "name": "author",
-      "html": "td.owner div.user-details a"
+      "html": "td.owner div.user-details a",
+      "attr": "text"
     }
   ]
 }

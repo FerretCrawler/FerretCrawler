@@ -1,24 +1,61 @@
 {
   "name": "store",
-  "html": "div .res-common-info",
   "props":
   [
     {
       "name": "name",
-      "html": ".main-info-title h1"
+      "html": ".main-info-title h1",
+      "attr": "text"
     },
     {
-      "name": "type",
+      "name": "detail_info",
+      "html": "div.new-detail-info-area div[class != 'new-detail-info-label']",
       "type": "all",
-      "html": "div.category-items a"
-    },
+      "attr": "text" },
     {
-      "name": "style",
-      "html": ".microsite-cuisine"
-    },
+      "name": "address",
+      "html": "div.res-common-add",
+      "attr": "text" },
     {
-      "name": "suitable_for",
-      "html": "div .audiences"
+      "name": "price_range",
+      "html": "div .res-common-minmaxprice span span",
+      "attr": "text" },
+    {
+      "name": "properties",
+      "html": "div.microsite-box-property li[class!='none']",
+      "type": "all",
+      "attr": "text" },
+    {
+      "name": "map_details",
+      "html": "div.map-overdetails",
+      "attr": "text" },
+    {
+      "name": "rating",
+      "html": "div.ratings-boxes-points b",
+      "attr": "text" },
+    {
+      "name": "comments",
+      "html": "div.micro-home-recent-review.review-item",
+      "type": "all",
+      "props":
+      [
+        {
+          "name": "title",
+          "html": "a.user-link span",
+          "attr": "text"
+        },
+        {
+          "name": "author",
+          "html": "",
+          "attr": "text"
+        },
+        {
+          "name": "detail",
+          "html": "",
+          "attr": "text",
+          "type": "all"
+        }
+      ]
     }
   ]
 }
