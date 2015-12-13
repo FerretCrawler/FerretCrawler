@@ -39,6 +39,20 @@ var scrapLinksFromURL = function(res, next) {
   //  next();
 }
 
+var extractData = function($, attr, tags) {
+  var data = [];
+  if (attr == null)
+    return tags;
+
+  tags.each(function(index, element) {
+    if(attr != "text")
+      data[index] = $(element).attr(attr);
+    else
+      data[index] = $(element).text();
+  });
+  return data;
+}
+
 var buildObject = function(url, $, obj){
   var target_obj = {};
   console.log("Building object ...")
@@ -46,12 +60,11 @@ var buildObject = function(url, $, obj){
   target_obj.url = url;
   for(i in obj.props) {
     if(obj.props[i].type == "all")
-      target_obj[obj.props[i].name] = $(obj.props[i].html).text();
-    else if(obj.props[i].type == "raw")
-      target_obj[obj.props[i].name] = $(obj.props[i].html);
+      target_obj[obj.props[i].name] = extractData($, obj.props[i].attr, $(obj.props[i].html));
     else
-      target_obj[obj.props[i].name] = $(obj.props[i].html).first().text();
+      target_obj[obj.props[i].name] = extractData($, obj.props[i].attr, $(obj.props[i].html).first());
   }
+  console.log(target_obj);
   return target_obj;
 }
 

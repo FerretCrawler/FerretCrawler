@@ -1,0 +1,17 @@
+{
+  "name": "article", // This field will be taken as table name.
+  "html": "div .block_col_480", // Deprecated.
+  "props": // These fields can be added freely. Each property represent a column.
+  [
+    {
+      "name": "title", // This field will be taken as column name.
+      "html": ".title_news h1", // Specify the HTML DOM we want to extract.
+      "type": "all", // Return all tag that match. By default it will return the first match.
+      "attr": "name" // Return the value of a specific attribute. By default it will return raw objects from cheerio.
+    },
+    {
+      ...
+    },
+    ...
+  ]
+}
