@@ -13,17 +13,8 @@ router.get('/', function(req, res, next) {
 /* GET Crawler */
 router.get('/crawl/:url', function(req, res, next) {
   // Crawl html content from url
-  // crawler.crawl(req.params.url, res, next);
-  crawler.crawl_html(req.params.url);
-  next();
-}, function(req, res, next) {
-  next();
-}, function(req, res, next) {
-  // Scrap information from content and store into database
-  // scraper.scrapLinksFromURL(res, next);
-  next();
-}, function(req, res, next) {
-  // res.send(res.locals.html);
+  // crawler.crawl_html(req.params.url);
+  crawler.crawl(req.params.url);
   next();
 });
 

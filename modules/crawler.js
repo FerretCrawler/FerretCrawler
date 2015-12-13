@@ -1,56 +1,90 @@
 var request = require('request');
-var cheerio = require('cheerio');   // parse and select HTML elements on the page
-var sleep = require('sleep');       // Sleep thread
+var cheerio = require('cheerio'); // parse and select HTML elements on the page
+var sleep = require('sleep'); // Sleep thread
 var scraper = require('.././modules/scraper');
 var Content = require('.././models/content');
 
-var START_URL =  "http://vnexpress.net";
-var SEARCH_WORD = "vnexpress";
-var SLEEP_DURATION = 3;         // second
+var START_URL = "";
+var SEARCH_WORD = "";
+var SLEEP_DURATION = 1; // second
 
 var pagesVisited = {};
 var pagesToVisit = [];
-var keywordIndexDefault = START_URL.toLowerCase().indexOf(SEARCH_WORD.toLowerCase()); // = 7 - Use for reject subdomain ...
+var keywordIndexDefault = -1;
 
 // Start to crawl
-function crawling () {
+function crawling() {
   var nextPage = pagesToVisit.pop();
-  console.log("\nNext Page: " + nextPage);
+  console.log("\nCrawling: " + nextPage);
   if (nextPage in pagesVisited) {
     // Page already visited
     crawling();
   } else {
-    visitPage(nextPage, crawling);
+    visitPage(nextPage);
   }
 }
 
 // Create request to specific page
-function visitPage (url, callback) {
+function visitPage(url) {
   pagesVisited[url] = true;
 
   // Delay some second to avoid blocking IP
   sleep.sleep(SLEEP_DURATION);
 
   // Make the request
-  console.log('Visiting page ' + url);
-  request(url, function(error, response, body) {
+  console.log('Visiting page: ' + url);
+  request(url, function(error, response, html) {
     if (error)
-      next(error);
+      console.log(error);
 
     // Check status code (200 is HTTP ok)
     // console.log("Status code: " + response.statusCode);
     if (response.statusCode == 200) {
-      // Parse the document body
-      var $ = cheerio.load(body);
-      // console.log("Page title: " + $('title').text());
-      // TODO: Scrapping content
+      // Scrapping content
+      scraper.scrapContents(url, html, null, Content.insert);
 
       // Get hyperlinks - scrapping links
-      collectAbsoluteLinks($);
-
-      callback();
+      scraper.scrapContents(url, html, "link", getAllLinks);
     }
+
   });
+}
+
+// Breadth First Crawler
+function getAllLinks(targetObj) {
+  // Get all links
+  var links = [];
+
+  var allLinks = targetObj.url;
+  // console.log("Links " + allLinks.length)
+
+  for (var key in allLinks) {
+    if (allLinks[key].attribs !== undefined && "href" in allLinks[key].attribs) {
+      var url = allLinks[key].attribs.href;
+
+      if (validateURL(url)) {
+        if (url in pagesVisited || pagesToVisit.indexOf(url) > -1 || links.indexOf(url) > -1) {
+          // console.log("X> Link existed");
+        } else {
+          // console.log("Found link: " + url);
+          links.push(url);
+          pagesToVisit.push(url);
+        }
+      };
+    };
+  };
+
+  links.forEach(function(value) {
+    var obj = {};
+    obj.table = "links"
+    obj.url = value;
+    obj.status = false;
+
+    Content.insert(obj);
+  });
+
+  console.log("Total need visit links: " + pagesToVisit.length);
+  crawling();
 }
 
 /*
@@ -62,73 +96,59 @@ function visitPage (url, callback) {
 function validateURL(url) {
   var isValid = false;
   var keywordIndex = url.toLowerCase().indexOf(SEARCH_WORD.toLowerCase());
-  // console.log("Keyword index in domain: " + keywordIndex);
-  if (keywordIndex !== -1 && keywordIndex == keywordIndexDefault) {
+
+  if (url.match(/^http:\/\/(?!www.)([a-z.])*(:[0-9]*)?\//i)) {
     isValid = true;
-  } else
+  } else {
+    return false;
+  }
+
+  if (keywordIndex > -1 && keywordIndex == keywordIndexDefault) {
+    isValid = true;
+  } else {
     // console.log("X> Link invalid");
+    isValid = false;
+  }
+
   return isValid;
 }
 
-// Breadth First Crawler
-function collectAbsoluteLinks($) {
-  var allAbsoluteLinks = [];
-
-  var absotuleLinks = $("a[href^='http']");
-
-  absotuleLinks.each(function() {
-    var link = $(this).attr('href');
-
-    if (validateURL(link)) {
-      if (link in pagesVisited || pagesToVisit.indexOf(link) !== -1 || allAbsoluteLinks.indexOf(link) !== -1) {
-        // console.log("X> Link existed");
-      } else {
-        console.log("Found link: " + link);
-        allAbsoluteLinks.push(link);
-      }
-    };
-  });
-   console.log("Found new " + allAbsoluteLinks.length + " absolute links");
-
-   allAbsoluteLinks.forEach(function(value) {
-    pagesToVisit.push(value);
-   });
-
-   console.log("Total need visit links: " + pagesToVisit.length);
-}
-
 // --------------------------
-var crawl = function(url, res, next) {
-  console.log("Crawling " + url);
+var crawl = function(url) {
+  url = "http://" + url;
+  START_URL = url;
+
+  var urlParts = url.replace('http://', '').replace('https://', '').split(/[/?#]/);
+  SEARCH_WORD = urlParts[0];
+  console.log("SEARCH_WORD: " + SEARCH_WORD);
+  keywordIndexDefault = START_URL.toLowerCase().indexOf(SEARCH_WORD.toLowerCase()); // = 7 - Use for reject subdomain ...
+  console.log("keywordIndexDefault: " + keywordIndexDefault);
 
   pagesToVisit.push(url);
   crawling();
-
-  next();
 };
 
 var crawl_html = function(url) {
   console.log("Crawling " + url);
-  if(url.match(/^http:\/\/(?!www.)([a-z.])*(:[0-9]*)?\//i)) {
-    request(url,
-      {
-        // Pretend to be a normal request
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:42.0) Gecko/20100101 Firefox/42.0',
-          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-          'Accept-Language': 'en-US,en;q=0.5',
-          'Accept-Encoding': 'gzip, deflate',
-          'Connection': 'keep-alive',
-          'Cache-Control': 'max-age=0'
-        },
-        gzip: true
-      } , function(error, response, html) {
-        if(!error) {
-          // Scrap the content based on .jmap file structure
-          scraper.scrapContents(url, html, null, Content.insert);
-        } else {
-          console.log(error);
-        }
+  if (url.match(/^http:\/\/(?!www.)([a-z.])*(:[0-9]*)?\//i)) {
+    request(url, {
+      // Pretend to be a normal request
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:42.0) Gecko/20100101 Firefox/42.0',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.5',
+        'Accept-Encoding': 'gzip, deflate',
+        'Connection': 'keep-alive',
+        'Cache-Control': 'max-age=0'
+      },
+      gzip: true
+    }, function(error, response, html) {
+      if (!error) {
+        // Scrap the content based on .jmap file structure
+        scraper.scrapContents(url, html, null, Content.insert);
+      } else {
+        console.log(error);
+      }
     });
   } else {
     console.log("URL should follow this template : http://hostname.ext/...");
