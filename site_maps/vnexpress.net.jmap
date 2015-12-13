@@ -5,16 +5,19 @@
   [
     {
       "name": "title",
-      "html": ".title_news h1"
+      "html": ".title_news h1",
+      "attr": "text"
     },
     {
       "name": "description",
-      "html": ".short_intro"
+      "html": ".short_intro",
+      "attr": "text"
     },
     {
       "name": "detail",
       "html": ".fck_detail p.Normal",
-      "type": "all"
+      "type": "all",
+      "attr": "text"
     }
   ]
 }
