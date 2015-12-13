@@ -45,10 +45,10 @@ var extractData = function($, attr, tags) {
     return tags;
 
   tags.each(function(index, element) {
-    if(attr != "text")
-      data[index] = $(element).attr(attr);
-    else
+    if(attr == "text")
       data[index] = $(element).text();
+    else
+      data[index] = $(element).attr(attr);
   });
   return data;
 }
