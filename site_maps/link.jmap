@@ -1,12 +1,11 @@
 {
   "name": "link",
-  "html": "href",
   "props":
   [
     {
       "name": "url",
       "html": "a",
-      "type": "raw"
+      "type": "all"
     }
   ]
 }

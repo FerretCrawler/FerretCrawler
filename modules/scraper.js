@@ -41,7 +41,7 @@ var buildObject = function(url, html, map_obj){
   target_obj.table = map_obj.name;
   target_obj.url = url;
   target_obj["information"] = getProps(html, map_obj);
-  console.log(target_obj.information);
+  // console.log(target_obj.information);
   return target_obj;
 }
 

@@ -41,7 +41,7 @@ function visitPage(url) {
     // console.log("Status code: " + response.statusCode);
     if (response.statusCode == 200) {
       // Scrapping content
-      scraper.scrapContents(url, html, null, Content.insert);
+      // scraper.scrapContents(url, html, null, Content.insert);
 
       // Get hyperlinks - scrapping links
       scraper.scrapContents(url, html, "link", getAllLinks);
@@ -55,9 +55,8 @@ function getAllLinks(targetObj) {
   // Get all links
   var links = [];
 
-  var allLinks = targetObj.url;
+  var allLinks = targetObj.information.url;
   // console.log("Links " + allLinks.length)
-
   for (var key in allLinks) {
     if (allLinks[key].attribs !== undefined && "href" in allLinks[key].attribs) {
       var url = allLinks[key].attribs.href;
@@ -115,7 +114,7 @@ function validateURL(url) {
 
 // --------------------------
 var crawl = function(url) {
-  url = "http://" + url;
+  // url = "http://" + url;
   START_URL = url;
 
   var urlParts = url.replace('http://', '').replace('https://', '').split(/[/?#]/);
