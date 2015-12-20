@@ -16,16 +16,15 @@ var extractData = function($, attr, tags) {
   return data;
 }
 
-var buildProps = function($, prop_map_obj){
+var buildProps = function($, parent_html, prop_map_obj){
   var target_obj = {};
   var args = new Args(arguments);
-  if(prop_map_obj.html != null)
-    html = $(prop_map_obj.html).parent().html();
   if(prop_map_obj.hasOwnProperty("props")) {
-    getProps(html, prop_map_obj, function(extracted_information){
-      console.log(extracted_information);
-      target_obj = extracted_information;
-    });
+    $(prop_map_obj.html).each(function(index, element) {
+      getProps($(element).html(), prop_map_obj, function(extracted_information){
+        target_obj[index] = extracted_information;
+      });
+    })
   } else {
     if(prop_map_obj.type == "all")
       target_obj = extractData($, prop_map_obj.attr, $(prop_map_obj.html));
@@ -44,7 +43,7 @@ var getProps = function(html, map_obj){
 
   for(i in map_obj.props) {
     var property = map_obj.props[i];
-    buildProps($, property, function(properties){
+    buildProps($, html, property, function(properties){
       target_obj[property.name] = properties;
     });
   }
@@ -56,8 +55,7 @@ var getProps = function(html, map_obj){
 var buildObject = function(url, html, map_obj){
   var target_obj = {};
   var args = new Args(arguments);
-  if(map_obj.name == "article")
-    console.log("Building object from: " + url)
+  console.log("Building object from: " + url)
   target_obj.table = map_obj.name;
   target_obj.url = url;
   getProps(html, map_obj, function(extracted_information){
@@ -70,8 +68,6 @@ var buildObject = function(url, html, map_obj){
 
 var scrapContents = function(url, html, map_file) {
   var args = new Args(arguments);
-  if(map_file != "link")
-    console.log(args.callback.name);
   if (html != null) {
     console.log("Scrapping content ...");
 
