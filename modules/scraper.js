@@ -16,7 +16,7 @@ var extractData = function($, attr, tags) {
   return data;
 }
 
-var buildProps = function($, parent_html, prop_map_obj){
+var buildProps = function($, prop_map_obj){
   var target_obj = {};
   var args = new Args(arguments);
   if(prop_map_obj.hasOwnProperty("props")) {
@@ -43,7 +43,7 @@ var getProps = function(html, map_obj){
 
   for(i in map_obj.props) {
     var property = map_obj.props[i];
-    buildProps($, html, property, function(properties){
+    buildProps($, property, function(properties){
       target_obj[property.name] = properties;
     });
   }
