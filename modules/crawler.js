@@ -30,24 +30,57 @@ function visitPage(url) {
 
   // Delay some second to avoid blocking IP
   sleep.sleep(SLEEP_DURATION);
-
   // Make the request
   console.log('Visiting page: ' + url);
-  request(url, function(error, response, html) {
-    if (error)
-      console.log(error);
 
-    // Check status code (200 is HTTP ok)
-    // console.log("Status code: " + response.statusCode);
-    if (response.statusCode == 200) {
-      // Scrapping content
-      // scraper.scrapContents(url, html, null, Content.insert);
+  if (url.match(/^http:\/\/(?!www.)([a-z.])*(:[0-9]*\/)?/i)) {
+    request(url, {
+      // Pretend to be a normal request
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:42.0) Gecko/20100101 Firefox/42.0',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.5',
+        'Accept-Encoding': 'gzip, deflate',
+        'Connection': 'keep-alive',
+        'Cache-Control': 'max-age=0'
+      },
+      gzip: true
+    }, function(error, response, html) {
+      if (!error && response.statusCode == 200) {
+        // Scrap the content based on .jmap file structure
+        // scraper.scrapContents(url, html, null, Content.insert);
+        // Get hyperlinks - scrapping links
+        scraper.scrapContents(url, html, "link", getAllLinks);
+      } else {
+        console.log(error);
+      }
+    });
+  } else {
+    console.log("URL should follow this template : http://hostname.ext/...");
+  }
 
-      // Get hyperlinks - scrapping links
-      scraper.scrapContents(url, html, "link", getAllLinks);
-    }
-
-  });
+  // pagesVisited[url] = true;
+  //
+  // // Delay some second to avoid blocking IP
+  // sleep.sleep(SLEEP_DURATION);
+  //
+  // // Make the request
+  // console.log('Visiting page: ' + url);
+  // request(url, function(error, response, html) {
+  //   if (error)
+  //     console.log(error);
+  //
+  //   // Check status code (200 is HTTP ok)
+  //   // console.log("Status code: " + response.statusCode);
+  //   if (response.statusCode == 200) {
+  //     // Scrapping content
+  //     scraper.scrapContents(url, html, null, Content.insert);
+  //
+  //     // Get hyperlinks - scrapping links
+  //     scraper.scrapContents(url, html, "link", getAllLinks);
+  //   }
+  //
+  // });
 }
 
 // Breadth First Crawler
