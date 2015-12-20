@@ -48,9 +48,9 @@ function visitPage(url) {
     }, function(error, response, html) {
       if (!error && response.statusCode == 200) {
         // Scrap the content based on .jmap file structure
-        // scraper.scrapContents(url, html, null, Content.insert);
+        scraper.scrapContents(url, html, null, Content.insert);
         // Get hyperlinks - scrapping links
-        scraper.scrapContents(url, html, "link", getAllLinks);
+        // scraper.scrapContents(url, html, "link", getAllLinks);
       } else {
         console.log(error);
       }
@@ -58,29 +58,6 @@ function visitPage(url) {
   } else {
     console.log("URL should follow this template : http://hostname.ext/...");
   }
-
-  // pagesVisited[url] = true;
-  //
-  // // Delay some second to avoid blocking IP
-  // sleep.sleep(SLEEP_DURATION);
-  //
-  // // Make the request
-  // console.log('Visiting page: ' + url);
-  // request(url, function(error, response, html) {
-  //   if (error)
-  //     console.log(error);
-  //
-  //   // Check status code (200 is HTTP ok)
-  //   // console.log("Status code: " + response.statusCode);
-  //   if (response.statusCode == 200) {
-  //     // Scrapping content
-  //     scraper.scrapContents(url, html, null, Content.insert);
-  //
-  //     // Get hyperlinks - scrapping links
-  //     scraper.scrapContents(url, html, "link", getAllLinks);
-  //   }
-  //
-  // });
 }
 
 // Breadth First Crawler
@@ -129,7 +106,7 @@ function validateURL(url) {
   var isValid = false;
   var keywordIndex = url.toLowerCase().indexOf(SEARCH_WORD.toLowerCase());
 
-  if (url.match(/^http:\/\/(?!www.)([a-z.])*(:[0-9]*)?\//i)) {
+  if (url.match(/^http:\/\/(?!www.)([a-z.])*(:[0-9]*\/)?/i)) {
     isValid = true;
   } else {
     return false;

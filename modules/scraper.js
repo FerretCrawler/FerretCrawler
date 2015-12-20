@@ -16,22 +16,37 @@ var extractData = function($, attr, tags) {
   return data;
 }
 
-var getProps = function(html, map_obj, callback){
+var buildProps = function($, prop_map_obj){
+  var target_obj = {};
+  var args = new Args(arguments);
+  if(prop_map_obj.html != null)
+    html = $(prop_map_obj.html).parent().html();
+  if(prop_map_obj.hasOwnProperty("props")) {
+    getProps(html, prop_map_obj, function(extracted_information){
+      console.log(extracted_information);
+      target_obj = extracted_information;
+    });
+  } else {
+    if(prop_map_obj.type == "all")
+      target_obj = extractData($, prop_map_obj.attr, $(prop_map_obj.html));
+    else
+      target_obj = extractData($, prop_map_obj.attr, $(prop_map_obj.html).first());
+  }
+  var listArgs = args.all;
+  listArgs.unshift(target_obj);
+  args.callback.apply({}, listArgs);
+}
+
+var getProps = function(html, map_obj){
   var $ = cheerio.load(html);
-  console.log("Getting props from " + map_obj.name);
   var target_obj = {};
   var args = new Args(arguments);
 
   for(i in map_obj.props) {
-    props = map_obj.props[i]
-    if(props.html != null)
-      html = $(props.html).html();
-    if(props.hasOwnProperty("props"))
-      target_obj[props.name] = getProps(html, props);
-    if(props.type == "all")
-      target_obj[props.name] = extractData($, props.attr, $(props.html));
-    else
-      target_obj[props.name] = extractData($, props.attr, $(props.html).first());
+    var property = map_obj.props[i];
+    buildProps($, property, function(properties){
+      target_obj[property.name] = properties;
+    });
   }
   var listArgs = args.all;
   listArgs.unshift(target_obj);

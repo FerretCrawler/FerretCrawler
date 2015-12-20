@@ -40,18 +40,13 @@
       "props":
       [
         {
-          "name": "title",
-          "html": "a.user-link span",
-          "attr": "text"
-        },
-        {
           "name": "author",
-          "html": "",
+          "html": "div.user a.user-link span",
           "attr": "text"
         },
         {
           "name": "detail",
-          "html": "",
+          "html": "div.desc.disableSection",
           "attr": "text",
           "type": "all"
         }
